@@ -3,3 +3,8 @@ build/
 out/
 cache/
 .claude/
+# Environment variables
+.env
+.env.local
+.env.*.local
+broadcast/
