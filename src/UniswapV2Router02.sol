@@ -45,16 +45,14 @@ contract UniswapV2Router02 is IUniswapV2Router02 {
         if (reserveA == 0 && reserveB == 0) {
             (amountA, amountB) = (amountADesired, amountBDesired);
         } else {
-            uint amountBOptimal = UniswapV2Library.quote(amountADesired, reserveA, reserveB);
-            if (amountBOptimal <= amountBDesired) {
-                require(amountBOptimal >= amountBMin, 'UniswapV2Router: INSUFFICIENT_B_AMOUNT');
-                (amountA, amountB) = (amountADesired, amountBOptimal);
-            } else {
-                uint amountAOptimal = UniswapV2Library.quote(amountBDesired, reserveB, reserveA);
-                assert(amountAOptimal <= amountADesired);
-                require(amountAOptimal >= amountAMin, 'UniswapV2Router: INSUFFICIENT_A_AMOUNT');
-                (amountA, amountB) = (amountAOptimal, amountBDesired);
-            }
+            // TODO: Implement optimal liquidity calculation
+            // 1. Calculate optimal amountB based on amountADesired using current reserves
+            // 2. If optimal amountB <= amountBDesired, use amountADesired and optimal amountB
+            // 3. Otherwise, calculate optimal amountA based on amountBDesired
+            // 4. Ensure amounts meet minimum requirements (amountAMin, amountBMin)
+            // 5. Set final (amountA, amountB) values
+            
+            return (amountA, amountB);
         }
     }
     function addLiquidity(
