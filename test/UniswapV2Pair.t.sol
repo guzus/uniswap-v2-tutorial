@@ -10,11 +10,17 @@ contract TestERC20 is ERC20 {
     constructor(uint256 _totalSupply) public ERC20("Test Token", "TEST", _totalSupply) {}
 }
 
+interface Vm {
+    function expectRevert(bytes calldata) external;
+}
+
 contract UniswapV2PairTest {
     UniswapV2Factory public factory;
     UniswapV2Pair public pair;
     TestERC20 public token0;
     TestERC20 public token1;
+
+    Vm constant vm = Vm(address(uint160(uint256(keccak256('hevm cheat code')))));
 
     address public wallet;
     uint256 constant MINIMUM_LIQUIDITY = 10**3;
@@ -168,7 +174,7 @@ contract UniswapV2PairTest {
         require(finalReserve1 < token1Amount, "reserve1 should decrease");
     }
 
-    function testFailSwapInsufficientOutputAmount() public {
+    function test_RevertWhen_SwapInsufficientOutputAmount() public {
         uint256 token0Amount = 5e18;
         uint256 token1Amount = 10e18;
         addLiquidity(token0Amount, token1Amount);
@@ -178,10 +184,11 @@ contract UniswapV2PairTest {
 
         // Try to get more output than allowed by constant product formula
         uint256 excessiveOutput = 2e18; // Too much!
-        pair.swap(0, excessiveOutput, wallet, ""); // Should revert with "UniswapV2: K"
+        vm.expectRevert(bytes("UniswapV2: K"));
+        pair.swap(0, excessiveOutput, wallet, "");
     }
 
-    function testFailSwapInsufficientLiquidity() public {
+    function test_RevertWhen_SwapInsufficientLiquidity() public {
         uint256 token0Amount = 5e18;
         uint256 token1Amount = 10e18;
         addLiquidity(token0Amount, token1Amount);
@@ -190,16 +197,18 @@ contract UniswapV2PairTest {
         uint256 swapAmount = 1e18;
         token0.transfer(address(pair), swapAmount);
 
-        pair.swap(0, token1Amount + 1, wallet, ""); // Should revert
+        vm.expectRevert(bytes("UniswapV2: INSUFFICIENT_LIQUIDITY"));
+        pair.swap(0, token1Amount + 1, wallet, "");
     }
 
-    function testFailSwapInsufficientInputAmount() public {
+    function test_RevertWhen_SwapInsufficientInputAmount() public {
         uint256 token0Amount = 5e18;
         uint256 token1Amount = 10e18;
         addLiquidity(token0Amount, token1Amount);
 
         // Don't send any tokens but try to swap
-        pair.swap(0, 1e18, wallet, ""); // Should revert with "UniswapV2: INSUFFICIENT_INPUT_AMOUNT"
+        vm.expectRevert(bytes("UniswapV2: INSUFFICIENT_INPUT_AMOUNT"));
+        pair.swap(0, 1e18, wallet, "");
     }
 
     function testSkim() public {

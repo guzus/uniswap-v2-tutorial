@@ -6,10 +6,16 @@ import "../src/UniswapV2Factory.sol";
 import "../src/UniswapV2Pair.sol";
 import "../src/test/ERC20.sol";
 
+interface Vm {
+    function expectRevert(bytes calldata) external;
+}
+
 contract UniswapV2FactoryTest {
     UniswapV2Factory public factory;
     address public wallet;
     address public other;
+
+    Vm constant vm = Vm(address(uint160(uint256(keccak256('hevm cheat code')))));
 
     address constant TEST_ADDRESS_0 = 0x1000000000000000000000000000000000000000;
     address constant TEST_ADDRESS_1 = 0x2000000000000000000000000000000000000000;
@@ -54,9 +60,10 @@ contract UniswapV2FactoryTest {
         require(pair.token1() == TEST_ADDRESS_1, "token1 mismatch");
     }
 
-    function testFailCreatePairPairExists() public {
+    function test_RevertWhen_CreatePairPairExists() public {
         factory.createPair(TEST_ADDRESS_0, TEST_ADDRESS_1);
-        factory.createPair(TEST_ADDRESS_0, TEST_ADDRESS_1); // should revert
+        vm.expectRevert(bytes("UniswapV2: PAIR_EXISTS"));
+        factory.createPair(TEST_ADDRESS_0, TEST_ADDRESS_1);
     }
 
     function testSetFeeTo() public {

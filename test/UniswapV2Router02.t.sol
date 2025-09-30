@@ -367,12 +367,13 @@ contract UniswapV2Router02Test is Test {
         assertGt(amounts[1], 0);
     }
 
-    function testFailAddLiquidityExpired() public {
+    function test_RevertWhen_AddLiquidityExpired() public {
         vm.startPrank(alice);
         tokenA.approve(address(router), INITIAL_LIQUIDITY);
         tokenB.approve(address(router), INITIAL_LIQUIDITY);
 
         // This should fail because deadline is in the past
+        vm.expectRevert(bytes("UniswapV2Router: EXPIRED"));
         router.addLiquidity(
             address(tokenA),
             address(tokenB),
@@ -387,7 +388,7 @@ contract UniswapV2Router02Test is Test {
         vm.stopPrank();
     }
 
-    function testFailSwapInsufficientOutput() public {
+    function test_RevertWhen_SwapInsufficientOutput() public {
         // Setup liquidity
         vm.startPrank(alice);
         tokenA.approve(address(router), INITIAL_LIQUIDITY);
@@ -415,6 +416,7 @@ contract UniswapV2Router02Test is Test {
         path[1] = address(tokenB);
 
         // This should fail because amountOutMin is too high
+        vm.expectRevert(bytes("UniswapV2Router: INSUFFICIENT_OUTPUT_AMOUNT"));
         router.swapExactTokensForTokens(
             swapAmount,
             10000e18, // Unrealistic minimum output
