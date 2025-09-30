@@ -6,11 +6,15 @@ import "forge-std/Script.sol";
 import "forge-std/console.sol";
 import "../src/UniswapV2Factory.sol";
 import "../src/UniswapV2Pair.sol";
+import "../src/UniswapV2Router02.sol";
 import "../src/test/ERC20.sol";
+import "../src/test/WETH9.sol";
 
 contract DeployScript is Script {
     // Deployment addresses
     UniswapV2Factory public factory;
+    UniswapV2Router02 public router;
+    WETH9 public weth;
     ERC20 public tokenA;
     ERC20 public tokenB;
     UniswapV2Pair public pair;
@@ -31,32 +35,52 @@ contract DeployScript is Script {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        // Step 1: Deploy the Factory
+        // Step 1: Deploy WETH
+        weth = new WETH9();
+        console.log("WETH deployed at:", address(weth));
+
+        // Step 2: Deploy the Factory
         factory = new UniswapV2Factory(deployer);
         console.log("Factory deployed at:", address(factory));
         console.log("Fee setter:", factory.feeToSetter());
 
-        // Step 2: Deploy two test tokens (for demonstration)
+        // Step 3: Deploy the Router
+        router = new UniswapV2Router02(address(factory), address(weth));
+        console.log("Router deployed at:", address(router));
+        console.log("Router factory:", router.factory());
+        console.log("Router WETH:", router.WETH());
+
+        // Step 4: Deploy two test tokens (for demonstration)
         tokenA = new ERC20(TOKEN_A_SUPPLY);
         tokenB = new ERC20(TOKEN_B_SUPPLY);
         console.log("Token A deployed at:", address(tokenA));
         console.log("Token B deployed at:", address(tokenB));
 
-        // Step 3: Create a pair
+        // Step 5: Create a pair
         address pairAddress = factory.createPair(address(tokenA), address(tokenB));
         pair = UniswapV2Pair(pairAddress);
         console.log("Pair created at:", pairAddress);
         console.log("Token0:", pair.token0());
         console.log("Token1:", pair.token1());
 
-        // Step 4: Add initial liquidity
-        // Transfer tokens to the pair
-        tokenA.transfer(pairAddress, INITIAL_LIQUIDITY_A);
-        tokenB.transfer(pairAddress, INITIAL_LIQUIDITY_B);
+        // Step 6: Add initial liquidity using the router
+        tokenA.approve(address(router), INITIAL_LIQUIDITY_A);
+        tokenB.approve(address(router), INITIAL_LIQUIDITY_B);
 
-        // Mint LP tokens
-        uint256 liquidity = pair.mint(deployer);
-        console.log("Initial liquidity minted:", liquidity);
+        (uint amountA, uint amountB, uint liquidity) = router.addLiquidity(
+            address(tokenA),
+            address(tokenB),
+            INITIAL_LIQUIDITY_A,
+            INITIAL_LIQUIDITY_B,
+            0,
+            0,
+            deployer,
+            block.timestamp + 300
+        );
+        console.log("Initial liquidity added via router:");
+        console.log("  Amount A:", amountA);
+        console.log("  Amount B:", amountB);
+        console.log("  Liquidity:", liquidity);
         console.log("LP token balance:", pair.balanceOf(deployer));
 
         // Display final reserves
@@ -68,7 +92,9 @@ contract DeployScript is Script {
 
         // Output deployment summary
         console.log("\n=== Deployment Summary ===");
+        console.log("WETH:", address(weth));
         console.log("Factory:", address(factory));
+        console.log("Router:", address(router));
         console.log("Token A:", address(tokenA));
         console.log("Token B:", address(tokenB));
         console.log("Pair:", pairAddress);
