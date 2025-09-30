@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.12;
 
+import "forge-std/Test.sol";
 import "forge-std/console.sol";
 import "../src/UniswapV2Factory.sol";
 import "../src/UniswapV2Pair.sol";
 import "../src/test/ERC20.sol";
 
-contract UniswapV2FactoryTest {
+contract UniswapV2FactoryTest is Test {
     UniswapV2Factory public factory;
     address public wallet;
     address public other;
@@ -54,8 +55,9 @@ contract UniswapV2FactoryTest {
         require(pair.token1() == TEST_ADDRESS_1, "token1 mismatch");
     }
 
-    function testFailCreatePairPairExists() public {
+    function testRevertWhenCreatePairPairExists() public {
         factory.createPair(TEST_ADDRESS_0, TEST_ADDRESS_1);
+        vm.expectRevert(bytes('UniswapV2: PAIR_EXISTS'));
         factory.createPair(TEST_ADDRESS_0, TEST_ADDRESS_1); // should revert
     }
 
