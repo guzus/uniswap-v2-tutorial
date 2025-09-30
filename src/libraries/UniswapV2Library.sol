@@ -43,10 +43,26 @@ library UniswapV2Library {
     function getAmountOut(uint amountIn, uint reserveIn, uint reserveOut) internal pure returns (uint amountOut) {
         require(amountIn > 0, 'UniswapV2Library: INSUFFICIENT_INPUT_AMOUNT');
         require(reserveIn > 0 && reserveOut > 0, 'UniswapV2Library: INSUFFICIENT_LIQUIDITY');
-        uint amountInWithFee = amountIn.mul(997);
-        uint numerator = amountInWithFee.mul(reserveOut);
-        uint denominator = reserveIn.mul(1000).add(amountInWithFee);
-        amountOut = numerator / denominator;
+        
+        // TODO: Implement Uniswap V2 swap calculation with 0.3% fee
+        // Formula: amountOut = (amountIn * 997 * reserveOut) / (reserveIn * 1000 + amountIn * 997)
+        // Steps:
+        // 1. Apply 0.3% fee to input amount (multiply by 997/1000)
+        // 2. Calculate numerator: amountInWithFee * reserveOut
+        // 3. Calculate denominator: reserveIn * 1000 + amountInWithFee
+        // 4. Calculate final amountOut: numerator / denominator
+        
+        // ↓↓↓ 학생이 구현할 부분 ↓↓↓
+        // uint feeMultiplier = 997;
+        // uint feeDenom = 1000;
+        // uint amountInWithFee = /* TODO */;
+        // uint numerator = /* TODO */;
+        // uint denominator = /* TODO */;
+        // amountOut = /* TODO */;
+        // ↑↑↑ 학생이 구현할 부분 ↑↑↑
+        
+        // 임시 값 (과제 완료 후 삭제)
+        amountOut = 0;
     }
 
     // given an output amount of an asset and pair reserves, returns a required input amount of the other asset
