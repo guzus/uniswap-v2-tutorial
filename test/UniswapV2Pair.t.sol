@@ -7,7 +7,7 @@ import "../src/UniswapV2Pair.sol";
 import "../src/test/ERC20.sol";
 
 contract TestERC20 is ERC20 {
-    constructor(uint256 _totalSupply) public ERC20(_totalSupply) {}
+    constructor(uint256 _totalSupply) public ERC20("Test Token", "TEST", _totalSupply) {}
 }
 
 contract UniswapV2PairTest {

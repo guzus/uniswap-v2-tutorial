@@ -18,8 +18,8 @@ contract DeployTest {
         require(factory.feeToSetter() == address(this), "Fee setter incorrect");
 
         // Deploy tokens
-        tokenA = new ERC20(1000000e18);
-        tokenB = new ERC20(1000000e18);
+        tokenA = new ERC20("Token A", "TKA", 1000000e18);
+        tokenB = new ERC20("Token B", "TKB", 1000000e18);
         require(address(tokenA) != address(0), "Token A deployment failed");
         require(address(tokenB) != address(0), "Token B deployment failed");
 
@@ -45,8 +45,8 @@ contract DeployTest {
 
     function testFactoryPairTracking() public {
         factory = new UniswapV2Factory(address(this));
-        tokenA = new ERC20(1000000e18);
-        tokenB = new ERC20(1000000e18);
+        tokenA = new ERC20("Token A", "TKA", 1000000e18);
+        tokenB = new ERC20("Token B", "TKB", 1000000e18);
 
         // Check initial state
         require(factory.allPairsLength() == 0, "Should have no pairs initially");

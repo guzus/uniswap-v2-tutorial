@@ -33,8 +33,8 @@ contract UniswapV2Router02Test is Test {
         router = new UniswapV2Router02(address(factory), address(weth));
 
         // Deploy test tokens
-        tokenA = new ERC20(INITIAL_SUPPLY);
-        tokenB = new ERC20(INITIAL_SUPPLY);
+        tokenA = new ERC20("Token A", "TKA", INITIAL_SUPPLY);
+        tokenB = new ERC20("Token B", "TKB", INITIAL_SUPPLY);
 
         // Fund test accounts
         vm.deal(alice, 100 ether);

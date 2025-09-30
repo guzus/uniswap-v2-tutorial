@@ -51,10 +51,10 @@ contract DeployScript is Script {
         console.log("Router WETH:", router.WETH());
 
         // Step 4: Deploy two test tokens (for demonstration)
-        tokenA = new ERC20(TOKEN_A_SUPPLY);
-        tokenB = new ERC20(TOKEN_B_SUPPLY);
-        console.log("Token A deployed at:", address(tokenA));
-        console.log("Token B deployed at:", address(tokenB));
+        tokenA = new ERC20("Good Morning", "GM", TOKEN_A_SUPPLY);
+        tokenB = new ERC20("Good Night", "GN", TOKEN_B_SUPPLY);
+        console.log("Token A (GM) deployed at:", address(tokenA));
+        console.log("Token B (GN) deployed at:", address(tokenB));
 
         // Step 5: Create a pair
         address pairAddress = factory.createPair(address(tokenA), address(tokenB));
@@ -95,9 +95,9 @@ contract DeployScript is Script {
         console.log("WETH:", address(weth));
         console.log("Factory:", address(factory));
         console.log("Router:", address(router));
-        console.log("Token A:", address(tokenA));
-        console.log("Token B:", address(tokenB));
-        console.log("Pair:", pairAddress);
+        console.log("Token A (GM):", address(tokenA));
+        console.log("Token B (GN):", address(tokenB));
+        console.log("GM-GN Pair:", pairAddress);
         console.log("========================\n");
     }
 }
